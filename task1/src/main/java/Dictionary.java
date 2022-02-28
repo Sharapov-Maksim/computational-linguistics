@@ -50,7 +50,6 @@ public class Dictionary {
         Lemma current_lemma = new Lemma();
         WordForm current_form = new WordForm();
 
-        enum xml_tag {none, grammeme, restr, lemma, l, f}
         for (; reader.hasNext(); reader.next()) {
             int eventType = reader.getEventType();
             switch (eventType) {
