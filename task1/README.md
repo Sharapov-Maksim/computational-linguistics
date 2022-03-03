@@ -2,4 +2,4 @@
 
 XML-файл с словарём open corpora можно скачать сдесь: http://opencorpora.org/dict.php
 
-Результат работы программы находится в файле ` \task1\src\main\resources\output.txt`
+Результат работы программы на входном корпусе `corps/dataset_news_science.txt` находится в файле `task1/src/main/resources/output.txt`

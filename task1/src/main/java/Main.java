@@ -13,14 +13,18 @@ public class Main {
         // read file and count frequences of lemmas
         File file = new File("../corps/dataset_news_science.txt");
         Scanner reader = new Scanner(file, StandardCharsets.UTF_8);
+        int totalCount = 0;
+        int parsedCount = 0;
         while (reader.hasNextLine()) {
             String data = reader.nextLine();
             List<String> tokens = splitBySpaces(data);
             for (String token : tokens) {
+                totalCount++;
                 Dictionary.PossibleLemmas possibleLemmas = dictionary.lemmatizationMapping.get(token);
                 if (possibleLemmas != null) {
                     ArrayList<Lemma> lemmas = possibleLemmas.getNormalizedLemmas();
                     if (lemmas.size() == 1) { // Если не нужно разрешать омонимию
+                        parsedCount++;
                         // Подсчёт количества вхождений леммы
                         Lemma curr_lemma = lemmas.get(0);
                         if (frequency.get(curr_lemma) != null) {
@@ -35,6 +39,8 @@ public class Main {
         }
         reader.close();
         System.out.println("Found unique lemmas :" + frequency.size());
+        System.out.println("Found lemmas for " + parsedCount + " tokens over total "
+                + totalCount + " tokens (" + (1. * parsedCount)/totalCount + ")");
         // sort by frequency
         var sortedFrequency = frequency.entrySet().stream().sorted((o1, o2) -> -1 * o1.getValue().compareTo(o2.getValue())).toList();
 
