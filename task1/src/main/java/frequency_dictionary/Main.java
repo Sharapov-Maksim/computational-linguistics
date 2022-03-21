@@ -1,3 +1,5 @@
+package frequency_dictionary;
+
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +18,7 @@ public class Main {
         int totalCount = 0;
         int definitelyCount = 0;
         int ambiguousCount = 0;
+        int possibleLemmasCount = 0;
         BufferedWriter writerErr = new BufferedWriter(new FileWriter("src/main/resources/errors.txt"));
         while (reader.hasNextLine()) {
             String data = reader.nextLine();
@@ -31,7 +34,7 @@ public class Main {
                     else if (lemmas.size() > 1) {
                         ambiguousCount++;
                     }
-
+                    possibleLemmasCount += lemmas.size();
                     for (Lemma curr_lemma : lemmas) {
                         // Подсчёт количества вхождений леммы
                         if (frequency.get(curr_lemma) != null) {
@@ -55,6 +58,7 @@ public class Main {
                 + totalCount + " tokens (" + (1. * definitelyCount + ambiguousCount)/totalCount + ")");
         System.out.println("Definite tokens: " + definitelyCount);
         System.out.println("Ambiguous tokens: " + ambiguousCount);
+        System.out.println("Possible lemmas count: " + possibleLemmasCount);
         System.out.println("Not lemmatized: " + (totalCount - definitelyCount - ambiguousCount));
         // sort by frequency
         var sortedFrequency = frequency.entrySet().stream().sorted((o1, o2) -> -1 * o1.getValue().compareTo(o2.getValue())).toList();

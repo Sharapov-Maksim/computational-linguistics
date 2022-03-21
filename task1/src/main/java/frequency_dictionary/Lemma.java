@@ -1,3 +1,5 @@
+package frequency_dictionary;
+
 public class Lemma {
     public Integer id = null;
     public WordForm initailForm = null;
@@ -10,6 +12,6 @@ public class Lemma {
 
     @Override
     public String toString() {
-        return "Lemma{" + initailForm + '}';
+        return "frequency_dictionary.Lemma{" + initailForm + '}';
     }
 }

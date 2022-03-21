@@ -1,3 +1,5 @@
+package frequency_dictionary;
+
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -64,7 +66,7 @@ public class Dictionary {
                         case "grammeme" -> {
                             current_grammeme = new Grammeme();
                         }
-                        // Grammeme internal fields
+                        // frequency_dictionary.Grammeme internal fields
                         // <name>POST</name>
                         case "name" -> {
                             reader.next();
