@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Dictionary {
     ArrayList<Grammeme> grammemes = new ArrayList<>();
@@ -154,7 +155,52 @@ public class Dictionary {
                 }
             }
         }
+
+        // Adding "." and "," to dictionary
+        WordForm dotw = new WordForm(".");
+        WordForm commaw = new WordForm(",");
+        Lemma dot = new Lemma(666666, dotw);
+        Lemma comma = new Lemma(666667, commaw);
+        lemmata.add(dot);
+        lemmata.add(comma);
+        PossibleLemmas pdot = new PossibleLemmas();
+        pdot.possibleLemmas.add(dot);
+        pdot.wordForms.add(dotw);
+        lemmatizationMapping.put(".", pdot);
+        PossibleLemmas pcomma = new PossibleLemmas();
+        pcomma.possibleLemmas.add(comma);
+        pcomma.wordForms.add(commaw);
+        lemmatizationMapping.put(",", pcomma);
     }
 
+    public ArrayList<Lemma> getPossibleLemmas (String word) {
+        var res = lemmatizationMapping.get(word);
+        if (res == null) {
+            // add new word to dictionary
+            WordForm wf = new WordForm(word);
+            Lemma lemma = new Lemma(null, wf);
+            lemmata.add(lemma);
+            PossibleLemmas pl = new PossibleLemmas();
+            pl.possibleLemmas.add(lemma);
+            pl.wordForms.add(wf);
+            lemmatizationMapping.put(word, pl);
+            return pl.possibleLemmas;
+        }
+        return res.possibleLemmas;
+    }
 
+    public Lemma lemmatizeWord (String word) {
+        if (getPossibleLemmas(word).size() == 0) {
+            System.out.println(word);
+        }
+        return getPossibleLemmas(word).get(0);
+    }
+
+    public ArrayList<Lemma> lemmatizeTokens (List<String> tokens) {
+        ArrayList<Lemma> res = new ArrayList<>();
+        for (String t : tokens) {
+            res.add(lemmatizeWord(t));
+        }
+        return res;
+    }
 }

@@ -10,8 +10,13 @@ public class Lemma {
         this.id = id;
     }
 
+    public Lemma (Integer id, WordForm wf) {
+        this.id = id;
+        this.initailForm = wf;
+    }
+
     @Override
     public String toString() {
-        return "frequency_dictionary.Lemma{" + initailForm + '}';
+        return "Lemma{" + initailForm + '}';
     }
 }
