@@ -163,13 +163,13 @@ public class Concordance {
             t = threshold;
         else
             t = 0;
-        var entries = leftContexts.entrySet().stream().filter(e -> e.getValue().count > t).
+        var entries = leftContexts.entrySet().stream().filter(e -> e.getValue().count >= t).
                 sorted((e1, e2) -> -1 * e1.getValue().count.compareTo(e2.getValue().count)).toList();
 
         for (Map.Entry<Context,Statistics> e : entries) {
             writer.write("l: " + e.getKey() + ": " + e.getValue().count + "\n");
         }
-        entries = rightContexts.entrySet().stream().filter(e -> e.getValue().count > t).
+        entries = rightContexts.entrySet().stream().filter(e -> e.getValue().count >= t).
                 sorted((e1, e2) -> -1 * e1.getValue().count.compareTo(e2.getValue().count)).toList();
         for (Map.Entry<Context,Statistics> e : entries) {
             writer.write("r: " + e.getKey() + ": " + e.getValue().count + "\n");
