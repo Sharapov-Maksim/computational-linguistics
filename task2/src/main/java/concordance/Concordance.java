@@ -1,12 +1,12 @@
 package concordance;
-import java.io.BufferedReader;
+
+import frequency_dictionary.Dictionary;
+import frequency_dictionary.Lemma;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-
-import frequency_dictionary.Dictionary;
-import frequency_dictionary.Lemma;
 
 public class Concordance {
     int n;
@@ -15,11 +15,11 @@ public class Concordance {
     List<Lemma> normalizedPhraseLemmas;
     List<String> corporaTokens;
     List<Lemma> normalizedCorporaLemmas;
-    ArrayList<Integer> matchIndexes = new ArrayList<>();
+    ArrayList<Integer> matchIndexes = null;
     HashMap<Context, Statistics> leftContexts = new HashMap<>();
     HashMap<Context, Statistics> rightContexts = new HashMap<>();
 
-    public class Statistics {
+    public static class Statistics {
         public Integer count = null;
         public ArrayList<Integer> indexes = new ArrayList<>();
 
@@ -76,22 +76,35 @@ public class Concordance {
         this.normalizedPhraseLemmas = dict.lemmatizeTokens(this.phraseTokens);
         this.normalizedCorporaLemmas = dict.lemmatizeTokens(this.corporaTokens);
 
-        // find phrase matches
-        for (int i = 0; i < normalizedCorporaLemmas.size() - normalizedPhraseLemmas.size(); i++) {
-            boolean match = true;
-            for (int j = 0; j < normalizedPhraseLemmas.size(); j++) {
-                Lemma pl = normalizedPhraseLemmas.get(j);
-                Lemma cl = normalizedCorporaLemmas.get(i+j);
-                if (!pl.equals(cl)){
-                    match = false;
-                    break;
-                }
-            }
-            if (match)
-                matchIndexes.add(i);
-        }
+        computeConcordances(n);
+    }
 
-        // TODO cut context with "," and "." probably
+    public Concordance(List<Lemma> phrase, List<Lemma> corpora, int n, Dictionary dict, ArrayList<Integer> matchIndexes){
+        this.n = n;
+        this.normalizedPhraseLemmas = phrase;
+        this.normalizedCorporaLemmas = corpora;
+        this.matchIndexes = matchIndexes;
+        computeConcordances(n);
+    }
+
+    private void computeConcordances(int n) {
+        // find phrase matches
+        if (matchIndexes == null) {
+            this.matchIndexes = new ArrayList<>();
+            for (int i = 0; i < normalizedCorporaLemmas.size() - normalizedPhraseLemmas.size(); i++) {
+                boolean match = true;
+                for (int j = 0; j < normalizedPhraseLemmas.size(); j++) {
+                    Lemma pl = normalizedPhraseLemmas.get(j);
+                    Lemma cl = normalizedCorporaLemmas.get(i + j);
+                    if (!pl.equals(cl)) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match)
+                    matchIndexes.add(i);
+            }
+        }
         // finding left contexts
         for (Integer i : matchIndexes){
             int startIdx = Math.max(i - n, 0);
@@ -110,7 +123,6 @@ public class Concordance {
                 }
             }
         }
-        System.out.println("Left contexts found");
 
         // right contexts
         for (Integer i : matchIndexes){
@@ -130,7 +142,6 @@ public class Concordance {
                 }
             }
         }
-        System.out.println("Right contexts found");
 
     }
 
@@ -142,7 +153,7 @@ public class Concordance {
         BufferedWriter writer = new BufferedWriter(new FileWriter(path));
         var entries = leftContexts.entrySet().stream().sorted((e1, e2) -> -1 * e1.getValue().count.compareTo(e2.getValue().count)).toList();
         for (Map.Entry<Context,Statistics> e : entries) {
-            writer.write(e.getKey() + ": " + e.getValue().count + "\n");
+            writer.write(e.getKey().lemmas + ": " + e.getValue().count + "\n");
         }
         writer.close();
     }
@@ -175,5 +186,13 @@ public class Concordance {
             writer.write("r: " + e.getKey() + ": " + e.getValue().count + "\n");
         }
         writer.close();
+    }
+
+    public HashMap<Context, Statistics> getLeftContexts() {
+        return leftContexts;
+    }
+
+    public HashMap<Context, Statistics> getRightContexts() {
+        return rightContexts;
     }
 }
