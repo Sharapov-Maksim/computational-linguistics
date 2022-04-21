@@ -203,4 +203,16 @@ public class Dictionary {
         }
         return res;
     }
+
+    public ArrayList<ArrayList<Lemma>> lemmatizeTextTokens (List<List<String>> textTokens) {
+        ArrayList<ArrayList<Lemma>> res = new ArrayList<>();
+        for (List<String> text : textTokens) {
+            ArrayList<Lemma> lemmas = new ArrayList<>();
+            for (String w : text) {
+                lemmas.add(lemmatizeWord(w));
+            }
+            res.add(lemmas);
+        }
+        return res;
+    }
 }

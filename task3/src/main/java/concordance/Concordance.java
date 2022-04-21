@@ -15,7 +15,9 @@ public class Concordance {
     List<Lemma> normalizedPhraseLemmas;
     List<String> corporaTokens;
     List<Lemma> normalizedCorporaLemmas;
+    List<ArrayList<Lemma>> normalizedTextsLemmas;
     ArrayList<Integer> matchIndexes = null;
+    ArrayList<Integer> indexesOfTexts = null;
     HashMap<Context, Statistics> leftContexts = new HashMap<>();
     HashMap<Context, Statistics> rightContexts = new HashMap<>();
 
@@ -85,6 +87,60 @@ public class Concordance {
         this.normalizedCorporaLemmas = corpora;
         this.matchIndexes = matchIndexes;
         computeConcordances(n);
+    }
+
+    public Concordance(List<Lemma> phrase, ArrayList<ArrayList<Lemma>> corporaLemmas, int n, Dictionary dict, ArrayList<Integer> indexesInTexts, ArrayList<Integer> indexesOfTexts){
+        this.n = n;
+        this.normalizedPhraseLemmas = phrase;
+        this.normalizedTextsLemmas = corporaLemmas;
+        this.matchIndexes = indexesInTexts;
+        this.indexesOfTexts = indexesOfTexts;
+        computeConcordancesInTexts(n);
+    }
+
+    private void computeConcordancesInTexts(int n) {
+        // finding left contexts
+        for (int idx = 0; idx < matchIndexes.size(); idx++){
+            List<Lemma> textLemmas = normalizedTextsLemmas.get(indexesOfTexts.get(idx));
+            Integer i = matchIndexes.get(idx);
+
+            int startIdx = Math.max(i - n, 0);
+            int endIdx = i + normalizedPhraseLemmas.size();
+            for (; startIdx < i; startIdx++){
+                ArrayList<Lemma> contextLemmas = new ArrayList<>();
+                for (int j = startIdx; j<endIdx; j++) {
+                    contextLemmas.add(textLemmas.get(j));
+                }
+                Context c = new Context(contextLemmas);
+                if (leftContexts.get(c) == null) {
+                    leftContexts.put(c, new Statistics(1, 0));
+                }
+                else {
+                    leftContexts.get(c).count ++;
+                }
+            }
+        }
+
+        // right contexts
+        for (int idx = 0; idx < matchIndexes.size(); idx++){
+            int startIdx = matchIndexes.get(idx);
+            List<Lemma> textLemmas = normalizedTextsLemmas.get(indexesOfTexts.get(idx));
+            int endIdx = Math.min(startIdx + textLemmas.size() + n, textLemmas.size());
+            for (int endIdx2 = startIdx + textLemmas.size(); endIdx2 <= endIdx; endIdx2++){
+                ArrayList<Lemma> contextLemmas = new ArrayList<>();
+                for (int j = startIdx; j<endIdx2; j++) {
+                    contextLemmas.add(textLemmas.get(j));
+                }
+                Context c = new Context(contextLemmas);
+                if (rightContexts.get(c) == null) {
+                    rightContexts.put(c, new Statistics(1, 0));
+                }
+                else {
+                    rightContexts.get(c).count ++;
+                }
+            }
+        }
+
     }
 
     private void computeConcordances(int n) {

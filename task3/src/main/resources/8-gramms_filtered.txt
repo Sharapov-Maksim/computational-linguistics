@@ -1,0 +1,2 @@
+Filtered by stability with threshold: 0.1
+[, сообщаю риа новость . о это заявил ]   count:10  textsCount:10  stability:0.1

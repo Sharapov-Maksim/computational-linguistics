@@ -1,0 +1,3 @@
+Filtered by stability with threshold: 0.1
+[, сообщаюсь на сайт bbc news . ]   count:20  textsCount:20  stability:0.1
+[, сообщаю риа новость . о это ]   count:14  textsCount:14  stability:0.07142857142857142

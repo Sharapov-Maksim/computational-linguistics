@@ -1,0 +1,14 @@
+Filtered by stability with threshold: 0.1
+[. дело в том , что ]   count:32  textsCount:32  stability:0.03125
+[, сообщаю риа новость . в ]   count:23  textsCount:23  stability:0.08695652173913043
+[. как сообщаю агентство reuters , ]   count:21  textsCount:21  stability:0.047619047619047616
+[, сообщаюсь на сайт bbc news ]   count:21  textsCount:21  stability:0.09523809523809523
+[. как сообщаю bbc news , ]   count:20  textsCount:20  stability:0.1
+[. несмотря на то , что ]   count:20  textsCount:20  stability:0.1
+[. по его слово , в ]   count:17  textsCount:17  stability:0.058823529411764705
+[, сообщаю риа новость . о ]   count:14  textsCount:14  stability:0.07142857142857142
+[, сообщаю риа новость . по ]   count:12  textsCount:12  stability:0.08333333333333333
+[, передаю агентство риа новость . ]   count:11  textsCount:11  stability:0.09090909090909091
+[. как сообщаю associated press , ]   count:11  textsCount:11  stability:0.09090909090909091
+[. как сообщаюсь на сайт газета ]   count:11  textsCount:11  stability:0.09090909090909091
+[, несмотря на то , что ]   count:10  textsCount:9  stability:0.1
