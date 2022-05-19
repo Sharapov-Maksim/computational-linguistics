@@ -1,5 +1,7 @@
 package frequency_dictionary;
 
+import concordance.Util;
+
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -11,9 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Dictionary {
-    ArrayList<Grammeme> grammemes = new ArrayList<>();
-    ArrayList<Lemma> lemmata = new ArrayList<>();
-    HashMap<String, PossibleLemmas> lemmatizationMapping = new HashMap<>();
+    public ArrayList<Grammeme> grammemes = new ArrayList<>();
+    public ArrayList<Lemma> lemmata = new ArrayList<>();
+    public HashMap<String, PossibleLemmas> lemmatizationMapping = new HashMap<>();
 
     public static class PossibleLemmas {
         ArrayList<WordForm> wordForms = new ArrayList<>(); // possible word forms match that token
@@ -199,7 +201,14 @@ public class Dictionary {
     public ArrayList<Lemma> lemmatizeTokens (List<String> tokens) {
         ArrayList<Lemma> res = new ArrayList<>();
         for (String t : tokens) {
-            res.add(lemmatizeWord(t));
+            if (t.startsWith("<")){
+                WordForm wordForm = new WordForm(null);
+                wordForm.grammemes = new ArrayList<>(Util.tokenizeBy(t.substring(1,t.length()-1),";"));
+                Lemma l = new Lemma(-1, wordForm);
+                res.add(l);
+            }
+            else
+                res.add(lemmatizeWord(t));
         }
         return res;
     }

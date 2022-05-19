@@ -5,30 +5,54 @@ import frequency_dictionary.Dictionary;
 import frequency_dictionary.Lemma;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Model {
     static ArrayList<Model> models;
     static HashMap<String, Model> elementNameToModel = new HashMap<>();
     static HashMap<String, ArrayList<Lemma>> elementNameToSynonyms = new HashMap<>();
-    static HashMap<Lemma, String> synonymToElementName = new HashMap<>();
+    static ArrayList<Lemma> synonyms = new ArrayList<>();
+    static ArrayList<String> elementNames = new ArrayList<>();
+    static HashMap<NGramm, String> ngrammToElementName = new HashMap<>();
+    static ArrayList<NGramm> possiblengramms = new ArrayList<>();
+    static HashSet<Integer> possibleN = new HashSet<>();
     public ArrayList<ModelElement> modelElements = new ArrayList<>();
     
     
     public static class ModelElement {
         public String name;
         public ArrayList<Lemma> synonyms;
-
-        public ModelElement(String name, ArrayList<Lemma> synonyms){
+        public NGramm nGramm;
+        public ModelElement(String name, ArrayList<Lemma> synonyms, NGramm nGramms){
             this.name = name;
             this.synonyms = synonyms;
+            this.nGramm = nGramms;
+        }
+    }
+
+    public static class NGramm {
+        ArrayList<Lemma> lemmas;
+
+        public NGramm(ArrayList<Lemma> lemmas) {
+            this.lemmas = lemmas;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            NGramm nGramm = (NGramm) o;
+            return Objects.equals(lemmas, nGramm.lemmas);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(lemmas);
         }
     }
 
     public static ArrayList<Model> loadModels (String pathToModels, String pathToElements, Dictionary dict) {
-        HashMap<String, ArrayList<Lemma>> elements = new HashMap<>();
+        HashMap<String, ModelElement> elements = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new FileReader(pathToElements))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -36,12 +60,25 @@ public class Model {
                     continue;
                 String[] parts = line.split(":");
                 String name = parts[0];
-                List<String> synonymsStr = Util.tokenize(parts[1]);
-                var syns = dict.lemmatizeTokens(synonymsStr);
-                elements.put(name, syns);
-                elementNameToSynonyms.put(name, syns);
-                for (var s : syns)
-                    synonymToElementName.put(s, name);
+                if (parts[1].contains("[")) {
+                    List<String> ngramElemsStr = Util.tokenizeWithoutDots(parts[1]);
+                    NGramm ngram = new NGramm(dict.lemmatizeTokens(ngramElemsStr));
+                    ModelElement modelElement = new ModelElement(name, null, ngram);
+                    elements.put(name, modelElement);
+                    ngrammToElementName.put(ngram, name);
+                    possibleN.add(ngram.lemmas.size());
+                }
+                else {
+                    List<String> synonymsStr = Util.tokenizeWithoutDots(parts[1]);
+                    var syns = dict.lemmatizeTokens(synonymsStr);
+                    ModelElement modelElement = new ModelElement(name, syns, null);
+                    elements.put(name, modelElement);
+                    elementNameToSynonyms.put(name, syns);
+                    for (var s : syns){
+                        synonyms.add(s);
+                        elementNames.add(name);
+                    }
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -53,10 +90,10 @@ public class Model {
                 if (line.length() < 2)
                     continue;
                 Model model = new Model();
-                List<String> elems = Util.tokenize(line);
+                List<String> elems = Util.tokenizeBy(line, " ");
                 for (String elementName : elems){
-                    ModelElement modelElement = new ModelElement(elementName, elements.get(elementName));
-                    model.modelElements.add(modelElement);
+                    //ModelElement modelElement = new ModelElement(elementName, elements.get(elementName)., null);
+                    model.modelElements.add(elements.get(elementName));
                     elementNameToModel.put(elementName, model);
                 }
                 res.add(model);
@@ -95,8 +132,19 @@ public class Model {
     public static HashMap<String, Boolean> analyzeSentence(ArrayList<Lemma> sentence) {
         HashMap<String, Boolean> isElementsInSentence = new HashMap<>();
         for (Lemma l : sentence) {
-            if (synonymToElementName.containsKey(l)) {
-                isElementsInSentence.put(synonymToElementName.get(l), true);
+            int pos = synonyms.indexOf(l);
+            if (pos != -1) {
+                isElementsInSentence.put(elementNames.get(pos), true);
+            }
+        }
+        for (Integer n : possibleN) {
+            for (int start = 0; start + n < sentence.size(); start++) {
+                List<Lemma> subList = sentence.subList(start, start+n);
+                ArrayList<Lemma> arrayList = new ArrayList<>(subList);
+                NGramm nGramm = new NGramm(arrayList);
+                if (ngrammToElementName.containsKey(nGramm)) {
+                    isElementsInSentence.put(ngrammToElementName.get(nGramm), true);
+                }
             }
         }
         return isElementsInSentence;

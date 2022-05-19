@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 
 public class Util {
     public static List<String> tokenize(String text) {
-        List<String> basedTokens = Arrays.stream(text.replace("\n", "").toLowerCase().split("[ \"()?:!'-]")).
+        List<String> basedTokens = Arrays.stream(text.replace("\n", "").toLowerCase().split("[ \\[\\]\"()?:!'-]")).
                 filter((x) -> x.length() > 0).toList();
         // "." and "," are tokens
         List<String> tokensWithDotsCommas = new ArrayList<>();
@@ -18,6 +18,16 @@ public class Util {
             }
         }
         return tokensWithDotsCommas;
+    }
+
+    public static List<String> tokenizeWithoutDots(String text) {
+        return Arrays.stream(text.replace("\n", "").split("[ \\[\\]\"()?:!'-.,]")).
+                filter((x) -> x.length() > 0).toList();
+    }
+
+    public static List<String> tokenizeBy(String text, String regex) {
+        return Arrays.stream(text.replace("\n", "").split(regex)).
+                filter((x) -> x.length() > 0).toList();
     }
 
     public static List<String> splitTexts(String corpora) {

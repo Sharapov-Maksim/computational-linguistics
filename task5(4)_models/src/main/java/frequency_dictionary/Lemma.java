@@ -1,5 +1,7 @@
 package frequency_dictionary;
 
+import java.util.Objects;
+
 public class Lemma {
     public Integer id = null;
     public WordForm initailForm = null;
@@ -18,5 +20,18 @@ public class Lemma {
     @Override
     public String toString() {
         return "Lemma{" + initailForm + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Lemma lemma = (Lemma) o;
+        return Objects.equals(initailForm, lemma.initailForm);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
