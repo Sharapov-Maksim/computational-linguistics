@@ -1,0 +1,16 @@
+Total amount of sentences: 20144
+Model: поверхность косм_тело   count: 0   frequency: 0.0
+Model: экипаж косм_станция   count: 0   frequency: 0.0
+Model: близкое время   count: 0   frequency: 0.0
+Model: движение косм_тело   count: 0   frequency: 0.0
+Model: мнить учёный   count: 0   frequency: 0.0
+Model: учёный исследовать NOUN   count: 0   frequency: 0.0
+Model: учёный университет   count: 0   frequency: 0.0
+Model: компания сделать объект   count: 0   frequency: 0.0
+Model: экипаж самолёт   count: 0   frequency: 0.0
+Model: цена миллион_доллар   count: 0   frequency: 0.0
+Model: экипаж космос   count: 0   frequency: 0.0
+Model: экипаж косм_станция VERB эксперимент   count: 0   frequency: 0.0
+Model: учёный исследовать объект   count: 0   frequency: 0.0
+Model: учёный университет исследовать   count: 0   frequency: 0.0
+Model: учёный_создал   count: 0   frequency: 0.0
