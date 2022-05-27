@@ -37,4 +37,12 @@ public class Descriptor {
     public void addSynset(ArrayList<Model.NGramm> synset) {
         this.synset.addAll(synset);
     }
+
+    public ArrayList<Descriptor> getAllGeneral () {
+        ArrayList<Descriptor> res = new ArrayList<>(general);
+        for (Descriptor descriptor : general) {
+            res.addAll(descriptor.getAllGeneral());
+        }
+        return res;
+    }
 }

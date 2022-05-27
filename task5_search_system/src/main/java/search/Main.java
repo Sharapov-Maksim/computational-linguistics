@@ -5,6 +5,8 @@ import models.Model;
 
 import javax.json.*;
 import javax.xml.stream.XMLStreamException;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
@@ -20,6 +22,13 @@ public class Main {
         Dictionary dictionary = new Dictionary("../dictionary/dict.opcorpora.xml");
         Text.dictionary = dictionary;
         SearchSystem searchSystem = new SearchSystem("src/main/java/search/descriptors.json", corpora, dictionary);
-        System.out.println(searchSystem);
+        try (BufferedReader br = new BufferedReader(new FileReader("src/main/java/search/requests.txt"))) {
+            String line;
+            int resultNo = 1;
+            while ((line = br.readLine()) != null) {
+                searchSystem.search(line.trim(), "src/main/resources/result_"+resultNo+".txt");
+                resultNo++;
+            }
+        }
     }
 }

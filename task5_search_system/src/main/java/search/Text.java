@@ -12,6 +12,7 @@ public class Text {
     public static Dictionary dictionary = null;
     public String rawText;
     public ArrayList<Lemma> lemmas;
+    public ArrayList<Double> vectorTF = new ArrayList<>(); // TF vector
     public ArrayList<Double> vector = new ArrayList<>(); // TF-IDF vector
 
     public Text (String text) {
@@ -41,30 +42,60 @@ public class Text {
         return false;
     }
 
-    public void calculateVector(List<Descriptor> descriptors) {
+    public void calculateVectorTF(List<Descriptor> descriptors) {
         ArrayList<Integer> counts = new ArrayList<>();
-        for (Descriptor descriptor : descriptors) {
-            int count = 0;
+        for (int i = 0; i < descriptors.size(); i++)
+            counts.add(0);
+        for (int did = 0; did < descriptors.size(); did++) {
+            Descriptor descriptor = descriptors.get(did);
+            int newcount = 0;
             for (int i = 0; i < lemmas.size(); i++) {
                 for (Model.NGramm nGramm : descriptor.synset) {
                     boolean hasNgramm = true;
-                    if (i + nGramm.lemmas.size() >= lemmas.size())
-                        break;
+                    if (i + nGramm.lemmas.size() > lemmas.size())
+                        continue;
                     for (int j = 0; j < nGramm.lemmas.size(); j++) {
                         if (!lemmas.get(i+j).equals(nGramm.lemmas.get(j))){
                             hasNgramm = false;
                             break;
                         }
                     }
-                    if (hasNgramm)
-                        count++;
+                    if (hasNgramm) {
+                        newcount++;
+                        break;
+                    }
                 }
             }
-            counts.add(count);
+            counts.set(did, counts.get(did) + newcount);
+            for (Descriptor d : descriptor.getAllGeneral()) {
+                int gid = descriptors.indexOf(d);
+                counts.set(gid, counts.get(gid) + newcount);
+            }
         }
-        vector.clear();
+        vectorTF.clear();
         for (Integer count : counts) {
-            vector.add(1. * count / lemmas.size());
+            vectorTF.add(1. * count / lemmas.size());
         }
+    }
+
+    public void calculateVector(List<Descriptor> descriptors) {
+        vector.clear();
+        if (vectorTF.isEmpty())
+            calculateVectorTF(descriptors);
+
+        for (int i = 0; i < descriptors.size(); i++) {
+            Descriptor descriptor = descriptors.get(i);
+            Double TF = vectorTF.get(i);
+            vector.add(TF * descriptor.IDF);
+        }
+    }
+
+    public String vectorToString(List<Descriptor> descriptors) {
+        StringBuilder stringBuilder = new StringBuilder("[");
+        for (int i = 0; i < vector.size(); i++) {
+            stringBuilder.append(descriptors.get(i).name).append(" ").append(vector.get(i)).append(", ");
+        }
+        stringBuilder.append("]");
+        return stringBuilder.toString();
     }
 }
