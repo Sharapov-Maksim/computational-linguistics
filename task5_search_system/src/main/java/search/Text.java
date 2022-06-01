@@ -88,6 +88,20 @@ public class Text {
             Double TF = vectorTF.get(i);
             vector.add(TF * descriptor.IDF);
         }
+        normalizeVector();
+    }
+
+    private void normalizeVector() {
+        double length = 0;
+        for (double d : vector) {
+            length += d * d;
+        }
+        if (length != 0) {
+            length = Math.sqrt(length);
+            for (int i = 0; i < vector.size(); i++) {
+                vector.set(i, vector.get(i) / length);
+            }
+        }
     }
 
     public String vectorToString(List<Descriptor> descriptors) {

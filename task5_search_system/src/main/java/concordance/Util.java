@@ -31,7 +31,7 @@ public class Util {
     }
 
     public static List<String> splitTexts(String corpora) {
-        List<String> basedTexts = Arrays.stream(corpora.toLowerCase().split("[\n]")).
+        List<String> basedTexts = Arrays.stream(corpora.toLowerCase().split("[\r\n]")).
                 filter((x) -> x.length() > 0).toList();
 
         assert (basedTexts.size() % 2 == 0);

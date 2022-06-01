@@ -18,7 +18,8 @@ import java.util.List;
 import static concordance.Util.*;
 
 public class SearchSystem {
-    private static final int MAX_RESULTS = 15;
+    private static final int MAX_RESULTS = 50;
+    private static final Double TRESHOLD = 0.8;
     public ArrayList<Text> textCollection = new ArrayList<>();
 
     public HashMap<String, Descriptor> descriptors = new HashMap<>();
@@ -109,18 +110,20 @@ public class SearchSystem {
             Text requestObj = new Text(request);
             requestObj.calculateVectorTF(descvals);
             requestObj.calculateVector(descvals);
-            //bufferedWriter.write("Request vector: " + requestObj.vectorToString(descvals) + "\n");
+            bufferedWriter.write("Request vector: " + requestObj.vectorToString(descvals) + "\n");
             ArrayList<Relevance> coss = new ArrayList<>(textCollection.size());
             for (int i = 0; i < textCollection.size(); i++) {
                 Text text = textCollection.get(i);
                 coss.add(new Relevance(i, requestObj.vector, text.vector));
             }
             var results = coss.stream().sorted((x1, x2) -> x2.cosValue.compareTo(x1.cosValue)).toList();
-            for (int i = 0; i < MAX_RESULTS; i++) {
+            for (int i = 0; i < Math.min(MAX_RESULTS, results.size()); i++) {
+                if (results.get(i).cosValue < TRESHOLD)
+                    break;
                 bufferedWriter.newLine();
                 int textIdx = results.get(i).textIdx;
                 bufferedWriter.write("Result #" + i + "  text #" + textIdx + "  relevance = "+results.get(i).cosValue + "\n");
-                //bufferedWriter.write("Result vector: " + textCollection.get(textIdx).vectorToString(descvals) + "\n");
+                bufferedWriter.write("Result vector: " + textCollection.get(textIdx).vectorToString(descvals) + "\n");
                 bufferedWriter.write("    " + textCollection.get(textIdx).rawText + "\n");
             }
         } catch (IOException e) {
